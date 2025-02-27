@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Medical Consultation</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: #f4f7f9;
+    }
+    .container {
+      max-width: 800px;
+      margin-top: 30px;
+    }
+    .conversation-box {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+      padding: 20px;
+      height: 500px;
+      overflow-y: auto;
+    }
+    .message {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+    .message.ai {
+      background-color: #e9f7fe;
+      color: #007bff;
+      align-self: flex-start;
+    }
+    .message.user {
+      background-color: #d4edda;
+      color: #155724;
+      align-self: flex-end;
+      text-align: right;
+    }
+    .message.loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-style: italic;
+      color: #999;
+    }
+    .diagnosis {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .input-area {
+      margin-top: 20px;
+    }
+    .input-area textarea {
+      resize: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="mb-4 text-center">AI Medical Consultation</h1>
+    <div class="alert alert-warning" role="alert">
+      <strong>DISCLAIMER:</strong> This system is for demonstration purposes only and does not provide professional medical advice. Always consult a licensed healthcare professional for medical concerns.
+    </div>
+    <div id="conversation" class="conversation-box d-flex flex-column"></div>
+    <div class="input-area">
+      <div class="form-group">
+        <textarea class="form-control" id="userInput" rows="2" placeholder="Type your response here..."></textarea>
+      </div>
+      <div class="d-flex justify-content-between">
+        <button id="sendButton" class="btn btn-primary">Send Text</button>
+        <button id="audioButton" class="btn btn-secondary">Record Audio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Append a message bubble to the conversation
+    function appendMessage(sender, text) {
+      const conversation = document.getElementById("conversation");
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message " + sender;
+      messageDiv.innerHTML = text;
+      conversation.appendChild(messageDiv);
+      conversation.scrollTop = conversation.scrollHeight;
+    }
+    
+    // Show a loading indicator for the AI response
+    function showAiLoading() {
+      const conversation = document.getElementById("conversation");
+      const loadingDiv = document.createElement("div");
+      loadingDiv.className = "message ai loading";
+      loadingDiv.innerHTML = `<div class="d-flex align-items-center">
+        <div class="spinner-border text-primary mr-2" role="status" style="width: 1rem; height: 1rem;"></div>
+        <span>AI is typing...</span>
+      </div>`;
+      conversation.appendChild(loadingDiv);
+      conversation.scrollTop = conversation.scrollHeight;
+      return loadingDiv;
+    }
+    
+    // Show a loading indicator for the user's audio input
+    function showUserLoading() {
+      const conversation = document.getElementById("conversation");
+      const loadingDiv = document.createElement("div");
+      loadingDiv.className = "message user loading";
+      loadingDiv.innerHTML = `<div class="d-flex align-items-center justify-content-end">
+        <span>Recording audio...</span>
+        <div class="spinner-border text-success ml-2" role="status" style="width: 1rem; height: 1rem;"></div>
+      </div>`;
+      conversation.appendChild(loadingDiv);
+      conversation.scrollTop = conversation.scrollHeight;
+      return loadingDiv;
+    }
+    
+    // Disable input fields when consultation is complete
+    function disableInput() {
+      document.getElementById("sendButton").disabled = true;
+      document.getElementById("userInput").disabled = true;
+      document.getElementById("audioButton").disabled = true;
+    }
+    
+    // Handler for sending text messages
+    document.getElementById("sendButton").addEventListener("click", function() {
+      const inputElem = document.getElementById("userInput");
+      const userText = inputElem.value.trim();
+      if (userText === "") return;
+      // Append user message immediately
+      appendMessage("user", userText);
+      inputElem.value = "";
+      
+      // Show AI loading indicator while waiting for response
+      const aiLoading = showAiLoading();
+      
+      fetch("/send_response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Remove loading spinner and update with real response
+        aiLoading.remove();
+        appendMessage("ai", data.response);
+        if (data.diagnosis) {
+          // Show clean, styled diagnosis message
+          const diagnosisDiv = document.createElement("div");
+          diagnosisDiv.className = "diagnosis";
+          diagnosisDiv.innerHTML = "<strong>Diagnosis:</strong><br>" + data.diagnosis;
+          document.getElementById("conversation").appendChild(diagnosisDiv);
+          disableInput();
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        aiLoading.remove();
+      });
+    });
+    
+    // Handler for sending audio messages
+    document.getElementById("audioButton").addEventListener("click", function() {
+      // Show loading indicator for user audio capture
+      const userLoading = showUserLoading();
+      
+      fetch("/send_audio")
+      .then(response => response.json())
+      .then(data => {
+        // Remove user's loading indicator and show recognized audio text
+        userLoading.remove();
+        appendMessage("user", data.audio_text ? "[Audio] " + data.audio_text : "Audio response received.");
+        
+        // Show AI loading indicator while waiting for response
+        const aiLoading = showAiLoading();
+        // Remove AI loading and update with response when received
+        aiLoading.remove();
+        appendMessage("ai", data.response);
+        if (data.diagnosis) {
+          // Present diagnosis in a clean styled box
+          const diagnosisDiv = document.createElement("div");
+          diagnosisDiv.className = "diagnosis";
+          diagnosisDiv.innerHTML = "<strong>Diagnosis:</strong><br>" + data.diagnosis;
+          document.getElementById("conversation").appendChild(diagnosisDiv);
+          disableInput();
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        userLoading.remove();
+      });
+    });
+  </script>
+</body>
+</html>
