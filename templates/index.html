@@ -2,96 +2,466 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Medical Consultation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediChat - AI Medical Assistant</title>
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
   <style>
+    :root {
+      --primary: #2c6aa8;
+      --secondary: #62b5e5;
+      --light-blue: #e1f1fa;
+      --success: #28a745;
+      --success-light: #d4edda;
+      --warning: #f6c23e;
+      --warning-light: #fff3cd;
+      --gray-light: #f4f7f9;
+      --white: #ffffff;
+    }
+    
     body {
-      background: #f4f7f9;
+      background-color: var(--gray-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #444;
     }
-    .container {
-      max-width: 800px;
-      margin-top: 30px;
-    }
-    .conversation-box {
-      background: #fff;
-      border: 1px solid #dee2e6;
-      border-radius: 0.25rem;
+    
+    .app-container {
+      max-width: 1000px;
+      margin: 0 auto;
       padding: 20px;
-      height: 500px;
-      overflow-y: auto;
     }
+    
+    .app-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      font-size: 32px;
+      color: var(--primary);
+      margin-right: 15px;
+    }
+    
+    .app-title {
+      color: var(--primary);
+      margin-bottom: 0;
+      font-weight: 600;
+    }
+    
+    .app-subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    
+    .disclaimer {
+      background-color: var(--warning-light);
+      border-left: 4px solid var(--warning);
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    
+    .chat-container {
+      display: flex;
+      height: 650px;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+    
+    .chat-sidebar {
+      width: 250px;
+      background-color: var(--primary);
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar-header {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .sidebar-info {
+      display: flex;
+      flex-direction: column;
+      margin-top: 15px;
+    }
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .info-icon {
+      margin-right: 10px;
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .conversation-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f8fafc;
+    }
+    
     .message {
-      padding: 10px;
+      padding: 12px 16px;
       margin-bottom: 15px;
       border-radius: 10px;
       max-width: 80%;
+      position: relative;
+      line-height: 1.5;
     }
+    
     .message.ai {
-      background-color: #e9f7fe;
-      color: #007bff;
+      background-color: var(--light-blue);
+      color: #333;
       align-self: flex-start;
+      margin-right: auto;
+      border-bottom-left-radius: 2px;
     }
+    
     .message.user {
-      background-color: #d4edda;
-      color: #155724;
+      background-color: var(--success-light);
+      color: #333;
       align-self: flex-end;
+      margin-left: auto;
       text-align: right;
+      border-bottom-right-radius: 2px;
     }
-    .message.loading {
+    
+    .message-time {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .ai-icon, .user-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-style: italic;
-      color: #999;
+      position: absolute;
+      bottom: -5px;
+      font-size: 14px;
     }
+    
+    .ai-icon {
+      background-color: var(--secondary);
+      color: white;
+      left: -5px;
+    }
+    
+    .user-icon {
+      background-color: var(--success);
+      color: white;
+      right: -5px;
+    }
+    
+    .message.loading {
+      background-color: var(--light-blue);
+      color: #666;
+      padding: 10px 16px;
+    }
+    
     .diagnosis {
-      background-color: #fff3cd;
-      color: #856404;
+      background-color: var(--warning-light);
       border: 1px solid #ffeeba;
       padding: 15px;
       border-radius: 5px;
-      margin-top: 20px;
+      margin: 20px auto;
+      max-width: 90%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
+    
+    .diagnosis-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      color: #856404;
+      font-weight: 600;
+    }
+    
+    .diagnosis-icon {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    
+    .input-container {
+      padding: 15px 20px;
+      background-color: white;
+      border-top: 1px solid #eaeaea;
+    }
+    
     .input-area {
-      margin-top: 20px;
+      display: flex;
+      background-color: #f8fafc;
+      border-radius: 24px;
+      padding: 8px 15px;
+      border: 1px solid #e1e5ea;
     }
+    
+    .input-area:focus-within {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(98, 181, 229, 0.2);
+    }
+    
     .input-area textarea {
+      flex: 1;
+      border: none;
+      background: transparent;
       resize: none;
+      padding: 8px;
+      outline: none;
+      font-size: 15px;
+    }
+    
+    .input-buttons {
+      display: flex;
+      align-items: center;
+    }
+    
+    .btn-send, .btn-audio {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: all 0.2s;
+    }
+    
+    .btn-send {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-send:hover {
+      background-color: #245986;
+    }
+    
+    .btn-audio {
+      background-color: #f0f0f0;
+      color: #555;
+    }
+    
+    .btn-audio:hover {
+      background-color: #e0e0e0;
+    }
+    
+    .btn-disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      color: #777;
+      margin-top: 8px;
+      padding: 0 10px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #4CAF50;
+      margin-right: 6px;
+    }
+    
+    /* For tablets and mobile */
+    @media (max-width: 768px) {
+      .chat-container {
+        flex-direction: column;
+        height: 80vh;
+      }
+      
+      .chat-sidebar {
+        width: 100%;
+        padding: 10px 15px;
+      }
+      
+      .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      
+      .sidebar-info {
+        display: none;
+      }
+      
+      .sidebar-title {
+        margin-bottom: 0;
+      }
+      
+      .sidebar-footer {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="mb-4 text-center">AI Medical Consultation</h1>
-    <div class="alert alert-warning" role="alert">
-      <strong>DISCLAIMER:</strong> This system is for demonstration purposes only and does not provide professional medical advice. Always consult a licensed healthcare professional for medical concerns.
-    </div>
-    <div id="conversation" class="conversation-box d-flex flex-column"></div>
-    <div class="input-area">
-      <div class="form-group">
-        <textarea class="form-control" id="userInput" rows="2" placeholder="Type your response here..."></textarea>
+  <div class="app-container">
+    <div class="app-header">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
       </div>
-      <div class="d-flex justify-content-between">
-        <button id="sendButton" class="btn btn-primary">Send Text</button>
-        <button id="audioButton" class="btn btn-secondary">Record Audio</button>
+      <div>
+        <h1 class="app-title">MediChat</h1>
+        <p class="app-subtitle">Your AI Medical Assistant</p>
+      </div>
+    </div>
+    
+    <div class="disclaimer">
+      <strong><i class="fas fa-exclamation-triangle me-2"></i>MEDICAL DISCLAIMER:</strong> This is a demonstration system only and does not provide professional medical advice. The information provided is not intended to be a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+    </div>
+    
+    <div class="chat-container">
+      <div class="chat-sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">MediChat Assistant</div>
+          <div>AI-powered support</div>
+        </div>
+        
+        <div class="sidebar-info">
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-info-circle"></i></div>
+            <div>Ask about symptoms</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-pills"></i></div>
+            <div>Medication information</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-procedures"></i></div>
+            <div>General health queries</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-notes-medical"></i></div>
+            <div>Lifestyle advice</div>
+          </div>
+        </div>
+        
+        <div class="sidebar-footer">
+          <p>Remember to consult with a healthcare professional for a proper diagnosis.</p>
+        </div>
+      </div>
+      
+      <div class="chat-main">
+        <div id="conversation" class="conversation-box"></div>
+        
+        <div class="input-container">
+          <div class="input-area">
+            <textarea id="userInput" placeholder="Describe your symptoms or ask a health question..." rows="1"></textarea>
+            <div class="input-buttons">
+              <button id="audioButton" class="btn-audio" title="Record audio">
+                <i class="fas fa-microphone"></i>
+              </button>
+              <button id="sendButton" class="btn-send" title="Send message">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+          <div class="status-indicator">
+            <div class="status-dot"></div>
+            <div>AI Assistant is online</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- jQuery and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Auto-resize textarea as user types
+    const textArea = document.getElementById('userInput');
+    textArea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      const maxHeight = 100; // Maximum height in pixels
+      this.style.height = Math.min(this.scrollHeight, maxHeight) + 'px';
+    });
+    
+    // Get current timestamp for messages
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
     // Append a message bubble to the conversation
     function appendMessage(sender, text) {
       const conversation = document.getElementById("conversation");
       const messageDiv = document.createElement("div");
       messageDiv.className = "message " + sender;
-      messageDiv.innerHTML = text;
+      
+      if (sender === 'ai') {
+        messageDiv.innerHTML = `
+          <div class="ai-icon"><i class="fas fa-robot"></i></div>
+          ${text}
+          <span class="message-time">${getCurrentTime()}</span>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          ${text}
+          <span class="message-time">${getCurrentTime()}</span>
+          <div class="user-icon"><i class="fas fa-user"></i></div>
+        `;
+      }
+      
       conversation.appendChild(messageDiv);
       conversation.scrollTop = conversation.scrollHeight;
     }
+    
+    // Append an automated welcome message when the page loads
+    window.onload = function() {
+      setTimeout(function() {
+        appendMessage("ai", "Hello! I'm your MediChat assistant. How can I help you today? You can describe your symptoms or ask health-related questions.");
+      }, 500);
+    };
     
     // Show a loading indicator for the AI response
     function showAiLoading() {
@@ -99,8 +469,8 @@
       const loadingDiv = document.createElement("div");
       loadingDiv.className = "message ai loading";
       loadingDiv.innerHTML = `<div class="d-flex align-items-center">
-        <div class="spinner-border text-primary mr-2" role="status" style="width: 1rem; height: 1rem;"></div>
-        <span>AI is typing...</span>
+        <div class="spinner-border text-primary me-2" role="status" style="width: 1rem; height: 1rem;"></div>
+        <span>MediChat is thinking...</span>
       </div>`;
       conversation.appendChild(loadingDiv);
       conversation.scrollTop = conversation.scrollHeight;
@@ -113,8 +483,8 @@
       const loadingDiv = document.createElement("div");
       loadingDiv.className = "message user loading";
       loadingDiv.innerHTML = `<div class="d-flex align-items-center justify-content-end">
-        <span>Recording audio...</span>
-        <div class="spinner-border text-success ml-2" role="status" style="width: 1rem; height: 1rem;"></div>
+        <span>Recording voice...</span>
+        <div class="spinner-border text-success ms-2" role="status" style="width: 1rem; height: 1rem;"></div>
       </div>`;
       conversation.appendChild(loadingDiv);
       conversation.scrollTop = conversation.scrollHeight;
@@ -124,18 +494,47 @@
     // Disable input fields when consultation is complete
     function disableInput() {
       document.getElementById("sendButton").disabled = true;
+      document.getElementById("sendButton").classList.add("btn-disabled");
       document.getElementById("userInput").disabled = true;
       document.getElementById("audioButton").disabled = true;
+      document.getElementById("audioButton").classList.add("btn-disabled");
+      
+      // Add a new consultation button
+      const inputArea = document.querySelector(".input-area");
+      inputArea.innerHTML = `
+        <button id="newConsultation" class="btn btn-primary w-100 py-2">
+          <i class="fas fa-plus-circle me-2"></i>Start New Consultation
+        </button>
+      `;
+      
+      // Add event listener for the new consultation button
+      document.getElementById("newConsultation").addEventListener("click", function() {
+        location.reload();
+      });
     }
     
     // Handler for sending text messages
     document.getElementById("sendButton").addEventListener("click", function() {
+      sendUserMessage();
+    });
+    
+    // Also send message when Enter key is pressed (but not with Shift+Enter)
+    document.getElementById("userInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendUserMessage();
+      }
+    });
+    
+    function sendUserMessage() {
       const inputElem = document.getElementById("userInput");
       const userText = inputElem.value.trim();
       if (userText === "") return;
+      
       // Append user message immediately
       appendMessage("user", userText);
       inputElem.value = "";
+      inputElem.style.height = 'auto';
       
       // Show AI loading indicator while waiting for response
       const aiLoading = showAiLoading();
@@ -150,11 +549,20 @@
         // Remove loading spinner and update with real response
         aiLoading.remove();
         appendMessage("ai", data.response);
+        
         if (data.diagnosis) {
           // Show clean, styled diagnosis message
           const diagnosisDiv = document.createElement("div");
           diagnosisDiv.className = "diagnosis";
-          diagnosisDiv.innerHTML = "<strong>Diagnosis:</strong><br>" + data.diagnosis;
+          diagnosisDiv.innerHTML = `
+            <div class="diagnosis-header">
+              <i class="fas fa-clipboard-check diagnosis-icon"></i>
+              Assessment Summary
+            </div>
+            <div class="diagnosis-content">
+              ${data.diagnosis}
+            </div>
+          `;
           document.getElementById("conversation").appendChild(diagnosisDiv);
           disableInput();
         }
@@ -162,15 +570,16 @@
       .catch(error => {
         console.error("Error:", error);
         aiLoading.remove();
+        appendMessage("ai", "I'm sorry, I encountered an error while processing your request. Please try again.");
       });
-    });
+    }
     
     // Handler for sending audio messages using Speech Recognition
     document.getElementById("audioButton").addEventListener("click", function() {
       // Check for browser support of the Speech Recognition API
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        console.error("Speech recognition is not supported in this browser.");
+        appendMessage("ai", "I'm sorry, speech recognition is not supported in your browser. Please use the text input instead.");
         return;
       }
       
@@ -178,6 +587,12 @@
       recognition.lang = 'en-US';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
+      
+      // Change microphone icon to indicate recording
+      const audioButton = document.getElementById("audioButton");
+      audioButton.innerHTML = '<i class="fas fa-stop-circle"></i>';
+      audioButton.style.backgroundColor = "#dc3545";
+      audioButton.style.color = "white";
       
       // Show loading indicator for audio capture
       const userLoading = showUserLoading();
@@ -189,9 +604,14 @@
         // Remove the audio capture loading indicator
         userLoading.remove();
         
+        // Reset the microphone button
+        audioButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        audioButton.style.backgroundColor = "";
+        audioButton.style.color = "";
+        
         // Capture the transcribed text
         const audioText = event.results[0][0].transcript;
-        appendMessage("user", "[Audio] " + audioText);
+        appendMessage("user", audioText);
         
         // Send the recognized text via the text API endpoint
         const aiLoading = showAiLoading();
@@ -204,10 +624,19 @@
         .then(data => {
           aiLoading.remove();
           appendMessage("ai", data.response);
+          
           if (data.diagnosis) {
             const diagnosisDiv = document.createElement("div");
             diagnosisDiv.className = "diagnosis";
-            diagnosisDiv.innerHTML = "<strong>Diagnosis:</strong><br>" + data.diagnosis;
+            diagnosisDiv.innerHTML = `
+              <div class="diagnosis-header">
+                <i class="fas fa-clipboard-check diagnosis-icon"></i>
+                Assessment Summary
+              </div>
+              <div class="diagnosis-content">
+                ${data.diagnosis}
+              </div>
+            `;
             document.getElementById("conversation").appendChild(diagnosisDiv);
             disableInput();
           }
@@ -215,12 +644,27 @@
         .catch(error => {
           console.error("Error:", error);
           aiLoading.remove();
+          appendMessage("ai", "I'm sorry, I encountered an error while processing your request. Please try again.");
         });
       };
       
       recognition.onerror = function(event) {
         console.error("Speech recognition error:", event.error);
         userLoading.remove();
+        
+        // Reset the microphone button
+        audioButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        audioButton.style.backgroundColor = "";
+        audioButton.style.color = "";
+        
+        appendMessage("ai", "I had trouble understanding your speech. Please try again or use the text input instead.");
+      };
+      
+      recognition.onend = function() {
+        // In case onresult doesn't fire, ensure the button is reset
+        audioButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        audioButton.style.backgroundColor = "";
+        audioButton.style.color = "";
       };
     });
   </script>
