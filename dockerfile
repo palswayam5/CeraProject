@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 5000
 
 # Define the command to run your application (adjust as needed)
-CMD ["python", "app.py"]
+CMD ["python", "api/index.py"]
