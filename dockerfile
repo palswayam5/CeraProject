@@ -1,25 +1,22 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Use an official Python runtime as a base image
+FROM python:3.9
 
-# Install system-level dependencies required for PyAudio (PortAudio)
+# Set the working directory
+WORKDIR /app
+
+# Install system dependencies required for PyAudio
 RUN apt-get update && apt-get install -y \
     portaudio19-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy your requirements.txt into the container
-COPY requirements.txt .
-
-# Install Python dependencies from requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of your application code into the container
+# Copy application files
 COPY . .
 
-# (Optional) Expose the port your app runs on (e.g., 5000 for a Flask app)
-EXPOSE 5000
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Define the command to run your application (adjust as needed)
+# Expose the default port (change if needed)
+EXPOSE 8000
+
+# Set the entry point to run the API
 CMD ["python", "api/index.py"]
