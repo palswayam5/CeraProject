@@ -165,36 +165,63 @@
       });
     });
     
-    // Handler for sending audio messages
+    // Handler for sending audio messages using Speech Recognition
     document.getElementById("audioButton").addEventListener("click", function() {
-      // Show loading indicator for user audio capture
+      // Check for browser support of the Speech Recognition API
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.error("Speech recognition is not supported in this browser.");
+        return;
+      }
+      
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      
+      // Show loading indicator for audio capture
       const userLoading = showUserLoading();
       
-      fetch("/send_audio")
-      .then(response => response.json())
-      .then(data => {
-        // Remove user's loading indicator and show recognized audio text
+      // Start recording audio
+      recognition.start();
+      
+      recognition.onresult = function(event) {
+        // Remove the audio capture loading indicator
         userLoading.remove();
-        appendMessage("user", data.audio_text ? "[Audio] " + data.audio_text : "Audio response received.");
         
-        // Show AI loading indicator while waiting for response
+        // Capture the transcribed text
+        const audioText = event.results[0][0].transcript;
+        appendMessage("user", "[Audio] " + audioText);
+        
+        // Send the recognized text via the text API endpoint
         const aiLoading = showAiLoading();
-        // Remove AI loading and update with response when received
-        aiLoading.remove();
-        appendMessage("ai", data.response);
-        if (data.diagnosis) {
-          // Present diagnosis in a clean styled box
-          const diagnosisDiv = document.createElement("div");
-          diagnosisDiv.className = "diagnosis";
-          diagnosisDiv.innerHTML = "<strong>Diagnosis:</strong><br>" + data.diagnosis;
-          document.getElementById("conversation").appendChild(diagnosisDiv);
-          disableInput();
-        }
-      })
-      .catch(error => {
-        console.error("Error:", error);
+        fetch("/send_response", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: audioText })
+        })
+        .then(response => response.json())
+        .then(data => {
+          aiLoading.remove();
+          appendMessage("ai", data.response);
+          if (data.diagnosis) {
+            const diagnosisDiv = document.createElement("div");
+            diagnosisDiv.className = "diagnosis";
+            diagnosisDiv.innerHTML = "<strong>Diagnosis:</strong><br>" + data.diagnosis;
+            document.getElementById("conversation").appendChild(diagnosisDiv);
+            disableInput();
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          aiLoading.remove();
+        });
+      };
+      
+      recognition.onerror = function(event) {
+        console.error("Speech recognition error:", event.error);
         userLoading.remove();
-      });
+      };
     });
   </script>
 </body>

@@ -1,4 +1,2 @@
 google-generativeai
 Flask
-SpeechRecognition
-PyAudio

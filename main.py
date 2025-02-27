@@ -11,32 +11,10 @@ NECESSARY IMPORTS
 
 import google.generativeai as genai
 import time
-import speech_recognition as sr  # For live audio input
+# import speech_recognition as sr  # For live audio input
 
 import os
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
-
-def get_live_audio_input(prompt):
-    """
-    Prompts the user by printing the prompt, then listens for live speech input
-    using the microphone. Returns the recognized text.
-    """
-    print(prompt)
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Listening... Please speak now.")
-        audio = r.listen(source)
-    try:
-        text = r.recognize_google(audio)
-        print("You said:", text)
-        return text
-    except sr.UnknownValueError:
-        print("Sorry, I could not understand your speech. Please try again.")
-        return get_live_audio_input(prompt)
-    except sr.RequestError as e:
-        print("Could not request results; please check your network.", e)
-        # Fallback to keyboard input in case of error:
-        return input(prompt)
 
 def ask_gemini(patient_history, model_name="gemini-1.5-flash", temperature=0.7):
     """
@@ -100,7 +78,29 @@ Important: Begin your response with a clear disclaimer that this is not professi
     response = model.generate_content(diagnosis_prompt)
     return response.text
 
-def run_medical_consultation():
+# def get_live_audio_input(prompt):
+#     """
+#     Prompts the user by printing the prompt, then listens for live speech input
+#     using the microphone. Returns the recognized text.
+#     """
+#     print(prompt)
+#     r = sr.Recognizer()
+#     with sr.Microphone() as source:
+#         print("Listening... Please speak now.")
+#         audio = r.listen(source)
+#     try:
+#         text = r.recognize_google(audio)
+#         print("You said:", text)
+#         return text
+#     except sr.UnknownValueError:
+#         print("Sorry, I could not understand your speech. Please try again.")
+#         return get_live_audio_input(prompt)
+#     except sr.RequestError as e:
+#         print("Could not request results; please check your network.", e)
+#         # Fallback to keyboard input in case of error:
+#         return input(prompt)
+
+#def run_medical_consultation():
     """
     Run an interactive medical consultation that collects symptoms via live audio input
     until ready for diagnosis.
@@ -147,6 +147,6 @@ def run_medical_consultation():
 
     print(f"\nConsultation saved to {filename}")
 
-# Run the program
-if __name__ == "__main__":
-    run_medical_consultation()
+# # Run the program
+# if __name__ == "__main__":
+#     run_medical_consultation()
