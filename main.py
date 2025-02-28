@@ -16,7 +16,7 @@ import time
 import os
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
-def ask_gemini(patient_history, model_name="gemini-1.5-flash", temperature=0.7):
+def ask_gemini(patient_history, model_name="gemini-2.0-flash", temperature=0.7):
     """
     Use Google's Gemini API to conduct a medical consultation.
     
@@ -46,7 +46,7 @@ If you have gathered sufficient information for a diagnosis, respond with "DIAGN
     response = model.generate_content(instructions)
     return response.text
 
-def generate_diagnosis(patient_history, model_name="gemini-1.5-flash", temperature=0.3):
+def generate_diagnosis(patient_history, model_name="gemini-2.0-flash", temperature=0.3):
     """
     Generate a diagnosis and prescription based on gathered patient information.
     
