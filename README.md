@@ -17,7 +17,6 @@ It uses **Google's Gemini AI** to provide interactive medical consultations, fol
 - [🚀 Usage](#-usage)  
 - [📡 API Endpoints](#-api-endpoints)  
 - [🧪 Testing](#-testing)  
-- [🌍 Deployment](#-deployment)  
 - [🤝 Contributing](#-contributing)  
 - [📜 License](#-license)  
 - [📩 Contact](#-contact)  
@@ -27,7 +26,6 @@ It uses **Google's Gemini AI** to provide interactive medical consultations, fol
 ## 🌟 Features  
 ✅ **AI-Powered Medical Consultations** - Users describe symptoms, and AI asks follow-up questions or provides a diagnosis.  
 ✅ **Secure Authentication** - User login and registration with encrypted passwords.  
-✅ **Consultation History** - Saves user consultations for future reference.  
 ✅ **Google Gemini AI Integration** - Uses Google's AI for medical reasoning.  
 ✅ **User-Friendly Interface** - Clean and responsive UI built with Bootstrap.  
 
