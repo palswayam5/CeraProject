@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediChat - Login/Register</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c6aa8;
+      --secondary: #62b5e5;
+      --light-blue: #e1f1fa;
+      --success: #28a745;
+      --gray-light: #f4f7f9;
+      --white: #ffffff;
+    }
+    
+    body {
+      background-color: var(--gray-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #444;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .auth-container {
+      max-width: 900px;
+      width: 100%;
+      padding: 20px;
+    }
+    
+    .app-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+    
+    .logo {
+      font-size: 32px;
+      color: var(--primary);
+      margin-right: 15px;
+    }
+    
+    .app-title {
+      color: var(--primary);
+      margin-bottom: 0;
+      font-weight: 600;
+    }
+    
+    .app-subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    
+    .auth-card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+    
+    .auth-row {
+      display: flex;
+      min-height: 500px;
+    }
+    
+    .auth-image {
+      flex: 1;
+      background-color: var(--primary);
+      color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .auth-image::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      height: 200px;
+      width: 200px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    
+    .auth-image::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      height: 300px;
+      width: 300px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+    
+    .auth-image-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .auth-image h2 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .auth-image p {
+      opacity: 0.9;
+      font-size: 15px;
+    }
+    
+    .feature-list {
+      margin-top: 30px;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .feature-icon {
+      margin-right: 12px;
+      width: 30px;
+      height: 30px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .auth-forms {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .auth-toggle {
+      display: flex;
+      margin-bottom: 25px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .toggle-btn {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      color: #777;
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .toggle-btn.active {
+      color: var(--primary);
+    }
+    
+    .toggle-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: var(--primary);
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+    }
+    
+    .auth-form {
+      display: none;
+    }
+    
+    .auth-form.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .form-control {
+      display: block;
+      width: 100%;
+      padding: 12px 15px;
+      background-color: #f8fafc;
+      border: 1px solid #e1e5ea;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    
+    .form-control:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(98, 181, 229, 0.2);
+      outline: none;
+    }
+    
+    .input-group {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 15px;
+      color: #999;
+    }
+    
+    .icon-input {
+      padding-left: 45px;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 15px;
+      background: none;
+      border: none;
+      color: #999;
+      cursor: pointer;
+    }
+    
+    .btn-auth {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-auth:hover {
+      background-color: #245986;
+    }
+    
+    .auth-footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+    }
+    
+    .auth-footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .form-check {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .form-check-input {
+      margin-right: 10px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .form-check-label {
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+    }
+    
+    /* For tablets and mobile */
+    @media (max-width: 768px) {
+      .auth-row {
+        flex-direction: column;
+        min-height: auto;
+      }
+      
+      .auth-image {
+        padding: 30px;
+      }
+      
+      .auth-forms {
+        padding: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="app-header">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+      </div>
+      <div>
+        <h1 class="app-title">MediChat</h1>
+        <p class="app-subtitle">Your AI Medical Assistant</p>
+      </div>
+    </div>
+    
+    <div class="auth-card">
+      <div class="auth-row">
+        <div class="auth-image">
+          <div class="auth-image-content">
+            <h2>Welcome to MediChat</h2>
+            <p>Your personal AI medical assistant designed to provide preliminary health insights and guidance.</p>
+            
+            <div class="feature-list">
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fas fa-comment-medical"></i>
+                </div>
+                <div>Interactive medical consultations</div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fas fa-history"></i>
+                </div>
+                <div>Save your consultation history</div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fas fa-lock"></i>
+                </div>
+                <div>Secure and private conversations</div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fas fa-pills"></i>
+                </div>
+                <div>Access health resources</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="auth-forms">
+          <div class="auth-toggle">
+            <button id="loginToggle" class="toggle-btn active">Login</button>
+            <button id="registerToggle" class="toggle-btn">Register</button>
+          </div>
+          
+          <form id="loginForm" class="auth-form active" action="/login" method="POST">
+            <div class="form-group">
+              <label for="loginEmail" class="form-label">Email</label>
+              <div class="input-group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="loginEmail" name="email" class="form-control icon-input" placeholder="Enter your email">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="loginPassword" class="form-label">Password</label>
+              <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="loginPassword" name="password" class="form-control icon-input" placeholder="Enter your password">
+                <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="form-check">
+              <input type="checkbox" id="rememberMe" name="remember" class="form-check-input">
+              <label for="rememberMe" class="form-check-label">Remember me</label>
+            </div>
+            
+            <button type="submit" class="btn-auth">Login</button>
+            
+            <div class="auth-footer">
+              <p>Don't have an account? <a href="#" id="showRegister">Register here</a></p>
+            </div>
+          </form>
+          
+          <form id="registerForm" class="auth-form" action="/register" method="POST">
+            <div class="form-group">
+              <label for="registerName" class="form-label">Full Name</label>
+              <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="registerName" name="name" class="form-control icon-input" placeholder="Enter your full name">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="registerEmail" class="form-label">Email</label>
+              <div class="input-group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="registerEmail" name="email" class="form-control icon-input" placeholder="Enter your email">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="registerPassword" class="form-label">Password</label>
+              <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="registerPassword" name="password" class="form-control icon-input" placeholder="Create a password">
+                <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="confirmPassword" name="confirm_password" class="form-control icon-input" placeholder="Confirm your password">
+                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="form-check">
+              <input type="checkbox" id="agreeTerms" name="agree_terms" class="form-check-input" required>
+              <label for="agreeTerms" class="form-check-label">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+            </div>
+            
+            <button type="submit" class="btn-auth">Create Account</button>
+            
+            <div class="auth-footer">
+              <p>Already have an account? <a href="#" id="showLogin">Login here</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle between login and register forms
+    document.getElementById('loginToggle').addEventListener('click', function() {
+      document.getElementById('loginToggle').classList.add('active');
+      document.getElementById('registerToggle').classList.remove('active');
+      document.getElementById('loginForm').classList.add('active');
+      document.getElementById('registerForm').classList.remove('active');
+    });
+    
+    document.getElementById('registerToggle').addEventListener('click', function() {
+      document.getElementById('registerToggle').classList.add('active');
+      document.getElementById('loginToggle').classList.remove('active');
+      document.getElementById('registerForm').classList.add('active');
+      document.getElementById('loginForm').classList.remove('active');
+    });
+    
+    document.getElementById('showRegister').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('registerToggle').click();
+    });
+    
+    document.getElementById('showLogin').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('loginToggle').click();
+    });
+    
+    // Toggle password visibility
+    function togglePassword(inputId) {
+      const passwordInput = document.getElementById(inputId);
+      const passwordToggle = passwordInput.nextElementSibling.querySelector('i');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        passwordToggle.classList.remove('fa-eye');
+        passwordToggle.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        passwordToggle.classList.remove('fa-eye-slash');
+        passwordToggle.classList.add('fa-eye');
+      }
+    }
+  </script>
+</body>
+</html>

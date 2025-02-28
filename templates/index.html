@@ -36,7 +36,13 @@
     .app-header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       margin-bottom: 20px;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
     }
     
     .logo {
@@ -55,6 +61,56 @@
       color: #666;
       font-size: 14px;
       margin-top: 4px;
+    }
+    
+    .logout-btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+    
+    .logout-btn:hover {
+      background-color: #245986;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .logout-icon {
+      margin-right: 8px;
+    }
+    
+    .history-btn {
+      background-color: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+      margin-right: 10px;
+    }
+    
+    .history-btn:hover {
+      background-color: var(--light-blue);
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .history-icon {
+      margin-right: 8px;
+    }
+    
+    .header-buttons {
+      display: flex;
+      align-items: center;
     }
     
     .disclaimer {
@@ -340,18 +396,44 @@
       .sidebar-footer {
         display: none;
       }
+      
+      .app-header {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .logo-container {
+        margin-bottom: 10px;
+      }
+      
+      .header-buttons {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app-container">
     <div class="app-header">
-      <div class="logo">
-        <i class="fas fa-heartbeat"></i>
+      <div class="logo-container">
+        <div class="logo">
+          <i class="fas fa-heartbeat"></i>
+        </div>
+        <div>
+          <h1 class="app-title">MediChat</h1>
+          <p class="app-subtitle">Your AI Medical Assistant</p>
+        </div>
       </div>
-      <div>
-        <h1 class="app-title">MediChat</h1>
-        <p class="app-subtitle">Your AI Medical Assistant</p>
+      
+      <div class="header-buttons">
+        <a href="view_consultation.html" class="history-btn">
+          <i class="fas fa-history history-icon"></i>
+          View History
+        </a>
+        <a href="/logout" class="logout-btn">
+          <i class="fas fa-sign-out-alt logout-icon"></i>
+          Logout
+        </a>
       </div>
     </div>
     
@@ -382,6 +464,10 @@
           <div class="info-item">
             <div class="info-icon"><i class="fas fa-notes-medical"></i></div>
             <div>Lifestyle advice</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-history"></i></div>
+            <div><a href="/history.html" style="color: white; text-decoration: none;">View history</a></div>
           </div>
         </div>
         
@@ -499,12 +585,17 @@
       document.getElementById("audioButton").disabled = true;
       document.getElementById("audioButton").classList.add("btn-disabled");
       
-      // Add a new consultation button
+      // Add new options - new consultation or view history
       const inputArea = document.querySelector(".input-area");
       inputArea.innerHTML = `
-        <button id="newConsultation" class="btn btn-primary w-100 py-2">
-          <i class="fas fa-plus-circle me-2"></i>Start New Consultation
-        </button>
+        <div class="d-flex gap-2 w-100">
+          <button id="newConsultation" class="btn btn-primary flex-grow-1 py-2">
+            <i class="fas fa-plus-circle me-2"></i>Start New Consultation
+          </button>
+          <a href="/history.html" class="btn btn-outline-primary flex-grow-1 py-2">
+            <i class="fas fa-history me-2"></i>View History
+          </a>
+        </div>
       `;
       
       // Add event listener for the new consultation button
