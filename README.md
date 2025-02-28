@@ -26,7 +26,7 @@ It uses **Google's Gemini AI** to provide interactive medical consultations, fol
 ## 🌟 Features  
 ✅ **AI-Powered Medical Consultations** - Users describe symptoms, and AI asks follow-up questions or provides a diagnosis.  
 ✅ **Secure Authentication** - User login and registration with encrypted passwords.  
-✅ **Google Gemini AI Integration** - Uses Google's AI for medical reasoning.  
+✅ **Huggign Face API Integration**  
 ✅ **User-Friendly Interface** - Clean and responsive UI built with Bootstrap.  
 
 ---
@@ -59,7 +59,7 @@ This project requires a **Google API Key** for the Gemini AI model.
 
 - **Add it to a `.env` file** inside the project directory:  
   ```
-  GOOGLE_API_KEY=your_api_key_here
+   HF_API_TOKEN = your_api_key_here
   ```
 
 ---
